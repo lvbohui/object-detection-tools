@@ -24,7 +24,7 @@ def count_labels(label_folder, category_dict):
         temp_table.append(category_name)
     cnt_table.append(temp_table)
 
-    label_files = os.listdir(label_folder)
+    label_files = [item for item in os.listdir(label_folder) if ".txt" in item]
     for label_file in label_files:
         f = open(os.path.join(label_folder, label_file), "r", encoding="utf-8")
         labels = f.readlines()
