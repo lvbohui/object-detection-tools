@@ -4,3 +4,9 @@
 
 # temp files
 temp/*
+
+# log files
+logs/*
+
+# data-set folder
+dataset/*
