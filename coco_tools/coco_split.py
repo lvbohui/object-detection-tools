@@ -37,8 +37,8 @@ def split_coco_dataset(dataset_dir, val_percent, test_percent, save_dir):
         logging.info("\'annotations.json\' is not found in {}!".format(
             dataset_dir))
 
-    annotation_file = osp.join(dataset_dir, "annotations.json")
-
+    # annotation_file = osp.join(dataset_dir, "annotations.json")
+    annotation_file = dataset_dir
 
     coco = COCO(annotation_file)
     img_ids = coco.getImgIds()
