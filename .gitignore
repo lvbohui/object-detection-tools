@@ -10,3 +10,9 @@ logs/*
 
 # data-set folder
 dataset/*
+output/*
+
+# draft python file
+draft.py
+
+detectron2-result/*

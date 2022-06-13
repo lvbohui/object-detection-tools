@@ -66,4 +66,3 @@ with open(args.test_label_file, "r") as f3:
 print("Not found number:\nTrain:{}, Valid:{}, Test:{}".format(train_valid_test_notfound[0], 
                                                               train_valid_test_notfound[1], 
                                                               train_valid_test_notfound[2]))
-

@@ -54,4 +54,3 @@ with open(args.label_file, "r", encoding="utf-8") as f:
     label = [k[0] for k in percent]
     plt.pie(size, labels=label, autopct="%.2f%%")
     plt.savefig("pie.jpg")
-

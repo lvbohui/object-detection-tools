@@ -29,4 +29,3 @@ for i in range(len(categoires)):
     e.accumulate()
     e.summarize()
     print("\n")
-
