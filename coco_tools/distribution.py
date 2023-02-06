@@ -49,8 +49,10 @@ with open(args.label_file, "r", encoding="utf-8") as f:
     plt.savefig("distribution.jpg")
 
     # Draw pie with percent
-    plt.figure(figsize=(6, 6))
-    size = [k[1] for k in percent]
-    label = [k[0] for k in percent]
-    plt.pie(size, labels=label, autopct="%.2f%%")
-    plt.savefig("pie.jpg")
+    # width = 8
+    # height = 6
+    # plt.figure(figsize=(width, height))
+    # size = [k[1] for k in percent]
+    # label = [k[0] for k in percent]
+    # plt.pie(size, labels=label, autopct="%.2f%%")
+    # plt.savefig("pie.jpg")

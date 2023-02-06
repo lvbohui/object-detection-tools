@@ -3,17 +3,16 @@ import json
 import os
 
 import cv2
-
 from pycocotools import coco
 
 # Visualization of COCO data-set
 parser = argparse.ArgumentParser()
-parser.add_argument("--annotation_file", type=str, 
-                    default="rotated_doorwindow_valid.json")
-parser.add_argument("--image_dir", type=str,
-                    default="dataset/rotated_doorwindow/valid")
-parser.add_argument("--output_dir", type=str,
-                    default="output/anno_visual")
+parser.add_argument("--annotation-file", type=str, 
+                    default="")
+parser.add_argument("--image-dir", type=str,
+                    default="")
+parser.add_argument("--output-dir", type=str,
+                    default="")
 args = parser.parse_args()
 
 os.makedirs(args.output_dir, exist_ok=True)
@@ -26,6 +25,8 @@ image2anno = coco.imgToAnns
 cnt = 0
 for image_id in images.keys():
     image_file_name = images[image_id]["file_name"]
+    if not os.path.exists(os.path.join(args.image_dir, image_file_name)):
+        continue
     image = cv2.imread(os.path.join(args.image_dir, image_file_name))
     image_height, image_width, _ = image.shape
 
@@ -37,5 +38,5 @@ for image_id in images.keys():
     cv2.imwrite(os.path.join(args.output_dir, image_file_name), image)
 
     cnt += 1
-    if cnt == 10:
+    if cnt == 30:
         break
