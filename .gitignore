@@ -11,8 +11,13 @@ logs/*
 # data-set folder
 dataset/*
 output/*
+*.jpg
 
 # draft python file
 draft.py
 
 detectron2-result/*
+
+# other files
+*.zip
+*.json
