@@ -1,10 +1,16 @@
+"""
+Split COCO dataset with specific train, valid, test rate.
+"""
 import argparse
 import json
 import logging
 import os
 import os.path as osp
 import random
+import shutil
 import time
+
+import numpy as np
 
 log_folder = "logs"
 log_path = osp.join(log_folder, "coco_split.log")
@@ -53,7 +59,7 @@ def split_coco_dataset(dataset_dir, val_percent, test_percent, save_dir):
     localtime = time.asctime( time.localtime(time.time()))
     licenses[0]["url"] = "www.foxitsoftware.com"
     licenses[0]["name"] = "Foxit Software Copyright"
-    info["description"] = "HD Component detection dataset"
+    info["description"] = "HD Color floorplan detection dataset"
     info["url"] = "www.foxitsoftware.com"
     info["version"] = "1.0"
     info["year"] = localtime.split(" ")[-1]
@@ -87,7 +93,7 @@ def split_coco_dataset(dataset_dir, val_percent, test_percent, save_dir):
             json_file = open(osp.join(save_dir, 'train.json'), 'w+')
             json.dump(img_dict, json_file, cls=MyEncoder)
         elif img_id_list == val_files_ids:
-            json_file = open(osp.join(save_dir, 'val.json'), 'w+')
+            json_file = open(osp.join(save_dir, 'valid.json'), 'w+')
             json.dump(img_dict, json_file, cls=MyEncoder)
         elif img_id_list == test_files_ids and len(test_files_ids):
             json_file = open(osp.join(save_dir, 'test.json'), 'w+')
@@ -95,16 +101,69 @@ def split_coco_dataset(dataset_dir, val_percent, test_percent, save_dir):
 
     return train_num, val_num, test_num
 
+def split_image(src_folder, output_dir, train_label_file, valid_label_file, test_label_file):
+
+    train_folder = os.path.join(output_dir, "train")
+    valid_folder = os.path.join(output_dir, "valid")
+    test_folder = os.path.join(output_dir, "test")
+
+
+    os.makedirs(train_folder, exist_ok=True)
+    os.makedirs(valid_folder, exist_ok=True)
+    os.makedirs(test_folder, exist_ok=True)
+
+    train_valid_test_notfound = [0, 0, 0]
+    with open(train_label_file, "r") as f:
+        train_label = json.load(f)
+        for item in train_label["images"]:
+            image_name = item["file_name"]
+            if os.path.exists(os.path.join(src_folder, image_name)):
+                old_image_path = os.path.join(src_folder, image_name)
+                new_image_path = os.path.join(train_folder, image_name)
+                shutil.copyfile(old_image_path, new_image_path)
+            else:
+                print("{} not found".format(image_name))
+                train_valid_test_notfound[0] += 1
+
+    with open(valid_label_file, "r") as f2:
+        valid_label = json.load(f2)
+        for item in valid_label["images"]:
+            image_name = item["file_name"]
+            if os.path.exists(os.path.join(src_folder, image_name)):
+                old_image_path = os.path.join(src_folder, image_name)
+                new_image_path = os.path.join(valid_folder, image_name)
+                shutil.copyfile(old_image_path, new_image_path)
+            else:
+                
+                train_valid_test_notfound[1] += 1
+
+    with open(test_label_file, "r") as f3:
+        test_label = json.load(f3)
+        for item in test_label["images"]:
+            image_name = item["file_name"]
+            if os.path.exists(os.path.join(src_folder, image_name)):
+                old_image_path = os.path.join(src_folder, image_name)
+                new_image_path = os.path.join(test_folder, image_name)
+                shutil.copyfile(old_image_path, new_image_path)
+            else:
+                train_valid_test_notfound[2] += 1
+
+    print("Not found number:\nTrain:{}, Valid:{}, Test:{}".format(train_valid_test_notfound[0], 
+                                                                train_valid_test_notfound[1], 
+                                                                train_valid_test_notfound[2]))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("COCO split")
+    parser.add_argument("--image-folder", type=str,
+                         help="labeled image folder")
     parser.add_argument("--label-file", type=str, default=".",
                          help="label file folder")
-    parser.add_argument("--val-percent", type=float, default=0.2,
-                         help="val percent")
+    parser.add_argument("--valid-percent", type=float, default=0.2,
+                         help="valid percent")
     parser.add_argument("--test-percent", type=float, default=0.1,
                          help="test percent")
-    parser.add_argument("--save-dir", type=str, default="./output",
+    parser.add_argument("--save-dir", type=str, default="./output/color_floorplan",
                          help="save dir")
     args = parser.parse_args()
 
@@ -114,3 +173,8 @@ if __name__ == "__main__":
                                                       args.test_percent,
                                                       args.save_dir)
     logging.info("train num: {}, val num: {}, test num: {}".format(train_num, val_num, test_num))
+
+    temp_list = ["train", "valid", "test"]
+
+    train_label_file, valid_label_file, test_label_file = [os.path.join(args.save_dir, item) for item in temp_list]
+    split_image(args.image_folder, args.save_dir, train_label_file, valid_label_file, test_label_file)
